@@ -181,6 +181,23 @@ pub fn set_hint(name: *const c_char, value: &CStr) {
     unsafe { SDL_SetHint(name, value.as_ptr()) };
 }
 
+/// macOS only: SDL's value for `SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES`, or None where it does not
+/// apply. Fullscreen through a Space (SDL's default) stops below the camera housing of a notched
+/// MacBook, so the stream is shrunk (nightjar issue 136); SDL's own fullscreen (a borderless
+/// window over the whole display, above the menu bar) draws into the notch area. The cost: a
+/// fullscreen window gets no Space of its own and no Mission Control entry, and the window's
+/// green button zooms instead of entering fullscreen. SDL reads it once, in `SDL_Init`.
+pub fn fullscreen_spaces_hint(macos: bool) -> Option<&'static CStr> {
+    macos.then_some(c"0")
+}
+
+/// Before `SDL_Init` (see `fullscreen_spaces_hint`).
+pub fn fullscreen_over_the_notch() {
+    if let Some(value) = fullscreen_spaces_hint(cfg!(target_os = "macos")) {
+        set_hint(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES, value);
+    }
+}
+
 /// While streaming, Alt+F4 goes to the PC's game instead of closing Nightjar, as in Moonlight
 /// (and V+): the stream's own quit shortcut and the window's close button still end it.
 pub fn alt_f4_to_host(streaming: bool) {

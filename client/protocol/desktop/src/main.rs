@@ -613,6 +613,7 @@ fn run(launch: Option<cli::Launch>, started: open_play::Started, link: Option<St
     #[cfg(not(target_os = "macos"))]
     let subsystems = subsystems | SDL_INIT_AUDIO;
     sdl::screen_sleeps_outside_streams();
+    sdl::fullscreen_over_the_notch();
     // SAFETY: SDL initialisation on the main thread.
     unsafe {
         if !SDL_Init(subsystems) {

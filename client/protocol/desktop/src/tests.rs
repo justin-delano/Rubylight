@@ -580,3 +580,9 @@ fn a_failed_save_is_told_once_with_the_folder() {
     assert!(!first_save_failure(&mut told), "one notice a run");
     std::fs::remove_dir_all(dir).ok();
 }
+
+#[test]
+fn macos_fullscreen_leaves_spaces_for_the_notch() {
+    assert_eq!(crate::sdl::fullscreen_spaces_hint(true), Some(c"0"), "SDL's own fullscreen covers the notch area");
+    assert_eq!(crate::sdl::fullscreen_spaces_hint(false), None, "Windows and Linux keep SDL's defaults");
+}
